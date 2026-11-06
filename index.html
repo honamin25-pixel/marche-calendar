@@ -1,0 +1,230 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>マルシェ窓口カレンダー</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="ユーワードの仲間が主催・出店・講師をする、マルシェとイベントのカレンダーです。">
+<meta property="og:title" content="マルシェ窓口カレンダー">
+<meta property="og:description" content="ユーワードの仲間が主催・出店・講師をする、マルシェとイベントのカレンダーです。">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📅</text></svg>">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<style>
+:root{--bg:#fbfcf8;--surface:#fff;--line:#e3e8dc;--fg:#2a2f27;--muted:#6b7464;--uw:#3f8a4a;--uw-soft:#e6f3e4;--accent:#d98a1f;--accent-soft:#fdf1e0;--chip:#f1f4ec;--scrim:rgba(20,24,18,.88);
+--fd:"Zen Maru Gothic","Hiragino Maru Gothic ProN",sans-serif;--fb:"Noto Sans JP","Hiragino Sans",sans-serif}
+@media (prefers-color-scheme:dark){:root{--bg:#161a15;--surface:#1f241d;--line:#323a2f;--fg:#ebefe6;--muted:#a3ac9b;--uw:#7cc486;--uw-soft:#22351f;--accent:#f0a947;--accent-soft:#3a2b14;--chip:#262c23;--scrim:rgba(0,0,0,.9);color-scheme:dark}}
+*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--fb);font-size:15px;line-height:1.6;padding:20px max(16px,env(safe-area-inset-right)) 48px max(16px,env(safe-area-inset-left))}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+h1{font-family:var(--fd);font-size:1.6rem;margin:0}h2{font-family:var(--fd);font-size:1.2rem;margin:0}
+.sub{margin:4px 0 0;color:var(--muted);font-size:.88rem}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chip{font:inherit;font-size:.88rem;border:1px solid var(--line);background:var(--chip);color:var(--fg);padding:6px 14px;border-radius:999px;cursor:pointer;min-height:36px}
+.chip[aria-pressed=true]{background:var(--uw);border-color:var(--uw);color:var(--surface)}
+input{font:inherit;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:10px;padding:8px 12px;min-height:40px;width:100%}
+.month{font-family:var(--fd);font-size:1.1rem;font-weight:700;margin:6px 0 0;padding-bottom:4px;border-bottom:2px solid var(--accent)}
+.ev{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:grid;grid-template-columns:120px 1fr}
+@media (max-width:380px){.ev{grid-template-columns:96px 1fr}}
+.thumbs{background:var(--chip);display:flex;flex-direction:column;gap:2px}.thumbs button{border:0;padding:0;background:none;cursor:zoom-in}
+.thumbs img{width:100%;max-height:180px;object-fit:contain;object-position:top;display:block}
+.body{padding:10px 12px;min-width:0;display:flex;flex-direction:column;gap:6px}
+.when{font-weight:700;color:var(--accent);font-size:.9rem}.when span{color:var(--muted);font-weight:500}
+h3{margin:0;font-size:1rem;line-height:1.45;overflow-wrap:anywhere}
+.tags{display:flex;flex-wrap:wrap;gap:6px}.tag{font-size:.72rem;padding:2px 8px;border-radius:999px;background:var(--chip);color:var(--muted)}
+.tag.uw{background:var(--uw);color:var(--surface);font-weight:700}.tag.hot{background:var(--accent-soft);color:var(--accent);font-weight:700}
+dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:2px 10px;font-size:.84rem}dt{color:var(--muted);white-space:nowrap}dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.more{font:inherit;font-size:.82rem;color:var(--uw);font-weight:700;background:none;border:0;padding:0;cursor:pointer;text-align:left}
+a{color:var(--uw);font-weight:700}
+.empty{text-align:center;color:var(--muted);padding:28px 12px;background:var(--surface);border:1px dashed var(--line);border-radius:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px;font-size:.9rem}
+.viewer{position:fixed;inset:0;background:var(--scrim);z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:56px 12px 16px}
+.viewer img{max-width:100%;max-height:100%;object-fit:contain;min-height:0}
+.viewer button{font:inherit;background:var(--surface);color:var(--fg);border:0;border-radius:999px;padding:8px 16px;cursor:pointer}
+.viewer .close{position:absolute;top:10px;right:12px;font-weight:700}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media (max-width:420px){.cmp{grid-template-columns:1fr}}
+.cmp div{border-radius:14px;padding:12px 14px}.cmp ul{margin:6px 0 0;padding-left:1.1em;font-size:.86rem}
+.cmp .b{background:var(--chip);color:var(--muted)}.cmp .a{background:var(--uw-soft);border:1px solid var(--uw)}
+.flow{list-style:none;margin:0;padding:0;counter-reset:f}
+.flow li{counter-increment:f;position:relative;display:grid;grid-template-columns:40px 1fr;column-gap:12px;padding-bottom:18px}
+.flow li::before{content:counter(f);grid-row:1/span 3;width:34px;height:34px;border-radius:50%;background:var(--accent);color:var(--surface);display:grid;place-items:center;font-family:var(--fd);font-weight:700;z-index:1}
+.flow li::after{content:"";position:absolute;left:16px;top:34px;bottom:0;width:2px;background:var(--line)}.flow li:last-child::after{display:none}
+.who{font-size:.72rem;font-weight:700;justify-self:start;padding:1px 8px;border-radius:999px;background:var(--chip)}
+.who.h{background:var(--accent-soft);color:var(--accent)}.who.s{background:var(--uw-soft);color:var(--uw)}
+.flow li>span:last-child{font-size:.86rem;color:var(--muted)}
+#list,#cal{width:100%}
+.calhead{display:flex;align-items:center;justify-content:space-between;font-family:var(--fd);font-size:1.15rem}
+.grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.dow{text-align:center;font-size:.75rem;color:var(--muted);font-weight:700}
+.dow.sun,.day.sun .n{color:#c2410c}.dow.sat,.day.sat .n{color:#2f6db0}
+.day{font:inherit;min-height:66px;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:3px;display:flex;flex-direction:column;align-items:stretch;gap:2px;text-align:left;cursor:pointer;color:var(--fg)}
+.day .n{font-size:.8rem;font-weight:700}
+.day.has{border-color:var(--uw);background:var(--uw-soft)}
+.day.today{box-shadow:inset 0 0 0 2px var(--accent)}
+.day.sel{outline:3px solid var(--accent);outline-offset:1px}
+.day.past{opacity:.45}
+.lab{display:block;font-size:.62rem;line-height:1.3;background:var(--uw);color:var(--surface);border-radius:4px;padding:1px 3px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.plus{font-size:.6rem;color:var(--uw);font-weight:700}
+.pill{display:inline-block;font-size:.76rem;font-weight:700;color:var(--uw);background:var(--uw-soft);padding:3px 12px;border-radius:999px}
+.worry{background:var(--chip);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.worry p{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:12px 12px 12px 2px;padding:6px 12px;font-size:.9rem;justify-self:start;align-self:flex-start}
+.big{font-family:var(--fd);font-size:1.25rem;font-weight:700;color:var(--uw);margin:0;text-align:center;line-height:1.5}
+.note{font-size:.8rem;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+</style></head><body><div class="wrap">
+<header><h1>マルシェ窓口カレンダー</h1><p class="sub">ユーワードの仲間が主催・出店・講師をする、マルシェとイベントです。</p></header>
+
+<section id="view" class="wrap" style="gap:12px">
+  <div class="row" id="modes"></div>
+  <div class="row" id="prefs"></div>
+  <div class="row" id="months"></div>
+  <input type="search" id="q" placeholder="例：西大寺、ランチ、施術" aria-label="キーワードで探す">
+  <div id="list" class="wrap" style="gap:12px"></div>
+  <div id="cal" class="wrap" style="gap:12px" hidden></div>
+  <div class="card">
+    <b>チラシを載せたい方へ</b>
+    <span>ユーワードのマルシェ・イベントは無料で載せられます。マルシェ窓口のLINEにチラシを送るだけです。</span>
+    <a href="https://lin.ee/oBsP0g4" target="_blank" rel="noopener">マルシェ窓口のLINEを友だち追加する ›</a>
+    <a href="./?page=auto" target="_top">主催者さん向け：自動お知らせのしくみ ›</a>
+  </div>
+  <div class="card">
+    <b>ユーワード以外での、ご自身の講演・イベントを載せたい方へ</b>
+    <span>ユーワードの外で開く講演・セミナー・講座・イベントも、このカレンダーに載せられます。掲載料は1回500ptです。</span>
+    <span>マルシェ窓口のLINEで「外部の講座を載せる」を選び、お支払いのあとにチラシを送るだけです。</span>
+    <a href="https://lin.ee/oBsP0g4" target="_blank" rel="noopener">マルシェ窓口のLINEから申し込む ›</a>
+  </div>
+  
+</section>
+
+<section id="auto" class="wrap" style="gap:14px" hidden>
+  <a href="./" target="_top">‹ カレンダーにもどる</a>
+  <div><span class="pill">出店者管理がしたい主催者さん向け</span><h2 style="font-size:1.4rem;margin-top:6px">自動お知らせのしくみ</h2></div>
+  <div class="worry"><b>こんなこと、ありませんか？</b>
+    <p>「確認することが多すぎる…」</p>
+    <p>「あの出店者さん、今どうなってるかな？」</p>
+    <p>「この人には、もう連絡したっけ？」</p>
+    <p>「提出期限を守ってもらって、〇〇日に集まってもらいたい」</p>
+  </div>
+  <p class="big">その連絡と管理、<br>マルシェ窓口が代わりにやります！</p>
+  <div class="cmp">
+    <div class="b"><b>これまで</b><ul><li>出店者さん一人ひとりに連絡</li><li>だれが出したか、メモで管理</li><li>期限前に、まだの人をさがして催促</li><li>返事が来るまで気になる</li></ul></div>
+    <div class="a"><b style="color:var(--uw)">これから</b><ul><li>出店者さんにやることリストが自動で届く</li><li>「済み・まだ」が一覧でひと目でわかる</li><li>まだの人だけに自動でお知らせ</li><li>主催者さんは一覧を見るだけ</li></ul></div>
+  </div>
+  <h2>流れ</h2>
+  <ol class="flow">
+    <li><span class="who h">主催者さん</span><b>申し込む</b><span>マルシェ窓口のLINEから申し込み、出店者さんに出してもらうもの（自店ページ・出店料など）と期限を伝えます。</span></li>
+    <li><span class="who s">出店者さん</span><b>やることリストが届く</b><span>マルシェ窓口のLINEに、自分のやることと期限が届きます。</span></li>
+    <li><span class="who s">出店者さん</span><b>済んだらボタンを押す</b><span>終わったものの「済みました」を押すと、チェックがつきます。</span></li>
+    <li><span class="who h">主催者さん</span><b>一覧で確認する</b><span>だれが何を済ませたかが、表でいつでも見られます。</span></li>
+    <li><span class="who">LINE</span><b>まだの人だけにお知らせ</b><span>期限の3日前に、まだのものがある人へ、まとめて1通お知らせします。</span></li>
+  </ol>
+  <div class="card"><b>よくある質問</b>
+    <b>料金は？</b><span>1マルシェにつき500pt（奈良のモニター価格）です。出店者さんの負担はありません。<br>※いまは奈良県のマルシェ限定の価格です。ほかの府県が加わったら、ポイントが上がります。</span>
+    <b>出店者さんがすることは？</b><span>マルシェ窓口のLINEを友だち登録して、済んだものを「済みました」を押すだけです。お知らせは友だち登録している人にだけ届きます。</span>
+    <b>出店者さんが何人でも大丈夫？</b><span>大丈夫です。20〜40店舗のマルシェでも使えます。</span>
+  </div>
+</section>
+
+<p class="note">内容は変わることがあります。出かける前・出店の前に、主催者さんにご確認ください。</p>
+</div>
+
+<div class="viewer" id="viewer" hidden><button class="close" id="vc">閉じる ✕</button><img id="vi" alt=""><div id="vn"><button id="vp">‹ 前</button> <button id="vx">次 ›</button></div></div>
+
+<script>
+let EVENTS=[];
+const API="https://script.google.com/macros/s/AKfycbzj7FTEQCWzle0R6xk8C-cn1bYt8-JXexOtr9edShlJJPG1l5YPSK-PXttf9FY7qInxZQ/exec?format=json";
+const PAGE=API?(new URLSearchParams(location.search).get("page")||"view"):"view";
+const WD=["日","月","火","水","木","金","土"];
+const pd=s=>{const[y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d)};
+const fmt=s=>{const d=pd(s);return (d.getMonth()+1)+"月"+d.getDate()+"日"};
+const wk=s=>WD[pd(s).getDay()];
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const img=id=>"https://drive.google.com/thumbnail?id="+encodeURIComponent(id)+"&sz=w1200";
+const st={pref:"奈良県",month:"",q:"",mode:"list",cm:"",day:""};
+document.getElementById("view").hidden=PAGE==="auto";
+document.getElementById("auto").hidden=PAGE!=="auto";
+const ymd=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const TODAY=ymd(new Date());
+function init(){
+st.cm=(EVENTS[0]?EVENTS[0].s:TODAY).slice(0,7);
+
+function chips(el,list,key){el.innerHTML=list.map(([v,l])=>'<button class="chip" data-v="'+esc(v)+'" aria-pressed="'+(st[key]===v)+'">'+esc(l)+'</button>').join("");
+  el.onclick=e=>{const b=e.target.closest("[data-v]");if(!b)return;st[key]=b.dataset.v;el.querySelectorAll("[data-v]").forEach(x=>x.setAttribute("aria-pressed",x===b));render()}}
+chips(document.getElementById("modes"),[["list","📋 一覧で見る"],["cal","📅 カレンダーで見る"]],"mode");
+chips(document.getElementById("prefs"),[["奈良県","奈良"],["大阪府","大阪"],["兵庫県","兵庫"],["","すべて"]],"pref");
+chips(document.getElementById("months"),[["","すべての月"]].concat([...new Set(EVENTS.map(e=>e.s.slice(0,7)))].sort().map(k=>[k,(+k.slice(5))+"月"])),"month");
+document.getElementById("q").oninput=e=>{st.q=e.target.value;render()};
+render();
+}
+
+function card(e){
+  const i=EVENTS.indexOf(e);
+  const tags=['<span class="tag uw">'+(e.kind==="koza"?"ユーワードの講師":"ユーワード")+'</span>'];
+  if(e.k)tags.push('<span class="tag">'+esc(e.k)+'</span>');
+  if(e.c)tags.push('<span class="tag">'+esc(e.c)+'</span>');
+  if(e.bosyu!=="")tags.push('<span class="tag hot">'+(+e.bosyu>0?"出店者募集中 あと"+esc(e.bosyu)+"店舗":"出店者の募集は終わりました")+'</span>');
+  if(e.taisho)tags.push('<span class="tag">'+(e.taisho==="uw"?"ユーワード会員のみ":"どなたでもOK")+'</span>');
+  const row=(k,v)=>v?'<dt>'+k+'</dt><dd>'+esc(v)+'</dd>':"";
+  return '<article class="ev"><div class="thumbs">'+e.img.map((id,j)=>'<button data-ev="'+i+'" data-i="'+j+'" aria-label="チラシを大きく見る"><img src="'+img(id)+'" alt="" loading="lazy"></button>').join("")+'</div>'+
+    '<div class="body"><div class="when">'+fmt(e.s)+'<span>（'+wk(e.s)+'）</span>'+(e.e?' 〜 '+fmt(e.e)+'<span>（'+wk(e.e)+'）</span>':"")+'</div>'+
+    '<h3>'+esc(e.n)+'</h3><div class="tags">'+tags.join("")+'</div><dl>'+
+    row("時間",e.t||"チラシで確認")+row("場所",e.p)+row("内容",e.prog)+row("料金",e.f)+row("定員",e.cap)+row("主催",e.org)+row("補足",e.notes)+row("申込",e.shime?e.shime+"まで":"")+row("駐車場",e.park)+row("問合せ",e.toi)+row("ひとこと",e.hito)+row("その他",e.sonota)+
+    '</dl>'+(e.img.length?'<button class="more" data-ev="'+i+'" data-i="0">チラシを大きく見る'+(e.img.length>1?"（"+e.img.length+"枚）":"")+' ›</button>':"")+'</div></article>';
+}
+const onDay=(e,d)=>d>=e.s&&d<=(e.e||e.s);
+
+function render(){
+  const cal=st.mode==="cal";
+  document.getElementById("months").hidden=cal;
+  document.getElementById("q").hidden=cal;
+  document.getElementById("list").hidden=cal;
+  document.getElementById("cal").hidden=!cal;
+  if(cal)return renderCal();
+  const q=st.q.trim().toLowerCase();
+  const items=EVENTS.filter(e=>(!st.pref||e.pref===st.pref)&&(!st.month||e.s.startsWith(st.month))&&(!q||[e.n,e.c,e.p,e.k,e.f,e.org,e.hito,e.prog,e.notes,e.sonota].join(" ").toLowerCase().includes(q)));
+  const list=document.getElementById("list");
+  if(!items.length){list.innerHTML='<div class="empty">この条件に合う予定はまだありません。<br>地域や月を「すべて」にしてみてください。</div>';return}
+  let h="",cur="";
+  items.forEach(e=>{const m=e.s.slice(0,7);if(m!==cur){h+='<h2 class="month">'+(+m.slice(5))+'月</h2>';cur=m}h+=card(e)});
+  list.innerHTML=h;
+}
+
+function renderCal(){
+  const items=EVENTS.filter(e=>!st.pref||e.pref===st.pref);
+  const [y,m]=st.cm.split("-").map(Number);
+  const first=new Date(y,m-1,1),days=new Date(y,m,0).getDate(),lead=first.getDay();
+  let h='<div class="calhead"><button class="chip" data-nav="-1" aria-label="前の月">‹</button><b>'+y+'年 '+m+'月</b><button class="chip" data-nav="1" aria-label="次の月">›</button></div>';
+  h+='<div class="grid">'+WD.map((w,i)=>'<div class="dow'+(i===0?" sun":i===6?" sat":"")+'">'+w+'</div>').join("");
+  for(let i=0;i<lead;i++)h+='<div></div>';
+  for(let d=1;d<=days;d++){
+    const ds=y+"-"+String(m).padStart(2,"0")+"-"+String(d).padStart(2,"0");
+    const evs=items.filter(e=>onDay(e,ds));
+    const wd=(lead+d-1)%7;
+    const cls="day"+(evs.length?" has":"")+(ds===TODAY?" today":"")+(ds===st.day?" sel":"")+(ds<TODAY?" past":"")+(wd===0?" sun":wd===6?" sat":"");
+    h+='<button class="'+cls+'" data-day="'+ds+'" aria-label="'+m+'月'+d+'日 '+evs.length+'件"><span class="n">'+d+'</span>'+
+      evs.slice(0,2).map(e=>'<span class="lab">'+esc(e.n)+'</span>').join("")+(evs.length>2?'<span class="plus">ほか'+(evs.length-2)+'件</span>':"")+'</button>';
+  }
+  h+='</div>';
+  const sel=st.day&&st.day.startsWith(st.cm)?items.filter(e=>onDay(e,st.day)):null;
+  if(sel){
+    const [, mm, dd]=st.day.split("-").map(Number);
+    h+='<h2 class="month">'+mm+'月'+dd+'日（'+wk(st.day)+'）</h2>'+(sel.length?sel.map(card).join(""):'<div class="empty">この日の予定はありません。</div>');
+  }else{
+    h+='<p class="sub" style="text-align:center">緑の日にちをタップすると、その日のマルシェが見られます。</p>';
+  }
+  document.getElementById("cal").innerHTML=h;
+}
+document.getElementById("cal").addEventListener("click",e=>{
+  const n=e.target.closest("[data-nav]");
+  if(n){const [y,m]=st.cm.split("-").map(Number);const d=new Date(y,m-1+(+n.dataset.nav),1);st.cm=ymd(d).slice(0,7);st.day="";renderCal();return}
+  const d=e.target.closest("[data-day]");
+  if(d){st.day=st.day===d.dataset.day?"":d.dataset.day;renderCal()}
+});
+
+const V=document.getElementById("viewer"),VI=document.getElementById("vi");let ve=null,vi=0;
+function show(){VI.src=img(ve.img[vi]);document.getElementById("vn").hidden=ve.img.length<2}
+document.getElementById("view").addEventListener("click",e=>{const b=e.target.closest("[data-ev]");if(!b)return;ve=EVENTS[+b.dataset.ev];vi=+b.dataset.i;show();V.hidden=false});
+document.getElementById("vc").onclick=()=>{V.hidden=true};
+V.onclick=e=>{if(e.target===V)V.hidden=true};
+document.getElementById("vp").onclick=()=>{vi=(vi-1+ve.img.length)%ve.img.length;show()};
+document.getElementById("vx").onclick=()=>{vi=(vi+1)%ve.img.length;show()};
+if(API){
+  document.getElementById("list").innerHTML='<div class="empty">読み込んでいます…</div>';
+  fetch(API).then(r=>r.json()).then(d=>{EVENTS=d.events||[];init()})
+    .catch(()=>{document.getElementById("list").innerHTML='<div class="empty">読み込めませんでした。<br>少し時間をおいて、ページを開き直してください。</div>'});
+}else{init()}
+</script></body></html>
