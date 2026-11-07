@@ -352,7 +352,7 @@ document.getElementById("s-body").addEventListener("click",e=>{
   it.done=!it.done;PEND[key]=(PEND[key]||0)+1;shopOne();
   picker("s-pick",SHOP,SCUR,i=>{SCUR=i;shopOne()},x=>x.items.filter(y=>y.done).length+"/"+x.items.length+" 済み");
   const want=it.done;
-  fetch(EXEC+"?format=done&k="+encodeURIComponent(KEY)+"&c="+encodeURIComponent(m.code)+"&i="+encodeURIComponent(it.id)+(want?"":"&undo=1"))
+  fetch(EXEC+"?format=done&k="+encodeURIComponent(KEY)+"&code="+encodeURIComponent(m.code)+"&item="+encodeURIComponent(it.id)+(want?"":"&undo=1"))
     .then(r=>r.text()).then(t=>{let d;try{d=JSON.parse(t)}catch(_){throw "返事がJSONではありません："+t.replace(/<[^>]*>/g," ").replace(/s+/g," ").trim().slice(0,80)}if(!d||d.error)throw (d&&d.msg)||"不明"})
     .catch(err=>toast("保存できませんでした（"+(typeof err==="string"?err:"通信エラー")+"）"))
     .finally(()=>{if(!--PEND[key])delete PEND[key];if(!Object.keys(PEND).length)reloadShop().catch(()=>{});else shopOne()});
