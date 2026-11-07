@@ -344,7 +344,7 @@ function shopOne(){
 }
 // 押したらすぐ見た目を変えて、うしろで保存する
 const PEND={};let toastT=0;
-function toast(t){const el=document.getElementById("toast");el.textContent=t;el.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>el.hidden=true,3500)}
+function toast(t){const el=document.getElementById("toast");el.textContent=t;el.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>el.hidden=true,9000)}
 function reloadShop(){return fetch(EXEC+"?format=shop&k="+encodeURIComponent(KEY)).then(r=>r.json()).then(d=>{if(!Object.keys(PEND).length)renderShop(d,SCUR)})}
 document.getElementById("s-body").addEventListener("click",e=>{
   const b=e.target.closest("button[data-id]");if(!b)return;
@@ -353,8 +353,8 @@ document.getElementById("s-body").addEventListener("click",e=>{
   picker("s-pick",SHOP,SCUR,i=>{SCUR=i;shopOne()},x=>x.items.filter(y=>y.done).length+"/"+x.items.length+" 済み");
   const want=it.done;
   fetch(EXEC+"?format=done&k="+encodeURIComponent(KEY)+"&c="+encodeURIComponent(m.code)+"&i="+encodeURIComponent(it.id)+(want?"":"&undo=1"))
-    .then(r=>r.json()).then(d=>{if(!d||d.error)throw 0})
-    .catch(()=>toast("通信がうまくいきませんでした。表示を最新にしています…"))
+    .then(r=>r.text()).then(t=>{let d;try{d=JSON.parse(t)}catch(_){throw "返事がJSONではありません："+t.replace(/<[^>]*>/g," ").replace(/s+/g," ").trim().slice(0,80)}if(!d||d.error)throw (d&&d.msg)||"不明"})
+    .catch(err=>toast("保存できませんでした（"+(typeof err==="string"?err:"通信エラー")+"）"))
     .finally(()=>{if(!--PEND[key])delete PEND[key];if(!Object.keys(PEND).length)reloadShop().catch(()=>{});else shopOne()});
 });
 if(PAGE==="shop"){
