@@ -169,6 +169,7 @@ a{color:var(--uw);font-weight:700}
 </section>
 
 <p class="note">内容は変わることがあります。出かける前・出店の前に、主催者さんにご確認ください。</p>
+<p class="note" style="margin-top:10px">改善案・ご意見等ありましたらこちらまで。<br><b>91322 Melati二口穂泉（奈良）</b></p>
 </div>
 
 <div class="viewer" id="viewer" hidden><button class="close" id="vc">閉じる ✕</button><img id="vi" alt=""><div id="vn"><button id="vp">‹ 前</button> <button id="vx">次 ›</button></div></div>
@@ -212,7 +213,7 @@ function card(e){
   if(e.taisho)tags.push('<span class="tag">'+(e.taisho==="uw"?"ユーワード会員のみ":"どなたでもOK")+'</span>');
   const row=(k,v)=>v?'<dt>'+k+'</dt><dd>'+esc(v)+'</dd>':"";
   return '<article class="ev"><div class="thumbs">'+e.img.map((id,j)=>'<button data-ev="'+i+'" data-i="'+j+'" aria-label="チラシを大きく見る"><img src="'+img(id)+'" alt="" loading="lazy"></button>').join("")+'</div>'+
-    '<div class="body"><div class="when">'+fmt(e.s)+'<span>（'+wk(e.s)+'）</span>'+(e.e?' 〜 '+fmt(e.e)+'<span>（'+wk(e.e)+'）</span>':"")+'</div>'+
+    '<div class="body"><div class="when">'+fmt(e.s)+'<span>（'+wk(e.s)+'）</span>'+(e.e&&e.e!==e.s?' 〜 '+fmt(e.e)+'<span>（'+wk(e.e)+'）</span>':"")+'</div>'+
     '<h3>'+esc(e.n)+'</h3><div class="tags">'+tags.join("")+'</div><dl>'+
     row("時間",e.t||"チラシで確認")+row("場所",e.p)+row("内容",e.prog)+row("料金",e.f)+row("定員",e.cap)+row("主催",e.org)+row("補足",e.notes)+row("申込",e.shime?e.shime+"まで":"")+row("駐車場",e.park)+row("問合せ",e.toi)+row("ひとこと",e.hito)+row("その他",e.sonota)+
     '</dl>'+(e.img.length?'<button class="more" data-ev="'+i+'" data-i="0">チラシを大きく見る'+(e.img.length>1?"（"+e.img.length+"枚）":"")+' ›</button>':"")+'</div></article>';
