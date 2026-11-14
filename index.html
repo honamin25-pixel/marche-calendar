@@ -64,6 +64,7 @@ a{color:var(--uw);font-weight:700}
 .minfo img{width:100%;max-height:130px;object-fit:cover;object-position:top;display:block}
 .minfo .zoom{display:block;font-size:.7rem;color:var(--uw);font-weight:700;padding:3px 0;background:var(--surface)}
 .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:.88rem;z-index:30;max-width:90%}
+.notice{margin-top:16px;background:#fff;border:1px solid #e3e8dc;border-radius:14px;padding:12px 14px}.notice b{display:block;font-size:14px;margin-bottom:4px}.notice .nt{border-top:1px dashed #e3e8dc;padding-top:8px;margin-top:8px}.notice .nt:first-of-type{border-top:0;margin-top:0}.notice .nw{font-size:12px;color:#6b7464}.notice p{margin:2px 0 0;font-size:14px;line-height:1.6;white-space:normal;word-break:break-word}
 .allok{background:var(--uw-soft);border:1px solid var(--uw);border-radius:14px;padding:12px 14px;text-align:center;font-weight:700;color:var(--uw)}.tablewrap{max-width:100%}
 .calhead{display:flex;align-items:center;justify-content:space-between;font-family:var(--fd);font-size:1.15rem}
 .grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
@@ -289,6 +290,10 @@ function picker(id,list,cur,onPick,sub){
   el.onclick=e=>{const b=e.target.closest("[data-i]");if(!b)return;el.querySelectorAll("[data-i]").forEach(x=>x.setAttribute("aria-pressed",x===b));onPick(+b.dataset.i)};
 }
 const placeOf=m=>{const i=m.info||{};return [i.city,i.place].filter(Boolean).join(" ")};
+function noticeHtml(list,title){
+  if(!list||!list.length)return "";
+  return '<div class="notice"><b>'+title+'</b>'+list.map(n=>'<div class="nt"><span class="nw">'+esc(n.when)+'</span><p>'+esc(n.text).split(String.fromCharCode(10)).join("<br>")+'</p></div>').join("")+'</div>';
+}
 function infoBox(id,m){
   const i=m.info||{},el=document.getElementById(id);INFO[id]=(i.img||[]).slice();
   const dl=[["場所",placeOf(m)],["時間",i.time]].filter(x=>x[1]).map(x=>'<dt>'+x[0]+'</dt><dd>'+esc(x[1])+'</dd>').join("");
@@ -309,6 +314,7 @@ function hostOne(d){
   document.getElementById("h-name").textContent=d.name;
   document.getElementById("h-date").textContent=fmt(d.date)+"（"+wk(d.date)+"）開催　参加コード："+d.code;
   infoBox("h-info",d);
+  document.getElementById("h-info").insertAdjacentHTML("beforeend",noticeHtml(d.notices,"📣 送った一斉連絡"));
   document.getElementById("h-total").textContent=d.shops.length;
   document.getElementById("h-full").textContent=full;
   document.getElementById("h-yet").textContent=d.shops.length-full;
@@ -342,6 +348,7 @@ function shopOne(){
   h+='<ul class="todo">'+m.items.map(it=>{const late=!it.done&&it.due&&it.due<TODAY;
     return '<li class="'+(it.done?"ok":"")+(PEND[m.code+"|"+it.id]?" busy":"")+'"><span class="t">'+esc(it.name)+'</span><span class="d'+(!it.done&&(soon(it.due)||late)?" soon":"")+'">期限 '+md(it.due)+(it.done?"":late?"（過ぎています）":soon(it.due)?"（もうすぐ）":"")+'</span>'+
     '<button class="sw" data-id="'+esc(it.id)+'" aria-pressed="'+it.done+'" aria-label="'+esc(it.name)+'：'+(it.done?"済み":"未")+'">'+(it.done?"✓ 済み":"未")+'</button></li>'}).join("")+'</ul>';
+  h+=noticeHtml(m.notices,"📣 主催者さんからのお知らせ");
   document.getElementById("s-body").innerHTML=h;
 }
 // 押したらすぐ見た目を変えて、うしろで保存する
